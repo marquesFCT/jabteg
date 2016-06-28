@@ -1,0 +1,115 @@
+
+package br.usp.each.saeg.agdtpoo.bytecodeFoundation;
+
+import br.usp.each.saeg.agdtpoo.entity.ReflectionMethod;
+import br.usp.each.saeg.agdtpoo.entity.ReflectionParameter;
+import br.usp.each.saeg.agdtpoo.util.Features;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+
+public class MethodParser {
+    
+    private static boolean isProhibitedMethods(String methodSignature)
+    {
+        String[] 
+                pMethods = new String[] 
+                        {
+                   "wait()",
+                   "wait(long)",
+                   "wait(long, int)",
+                   "notify()",
+                   "InterruptedException",
+                   "notifyAll()",
+                   "equals(Object)",
+                   "getClass()"
+                };
+                   
+        if (methodSignature.contains("wait"))
+            methodSignature = methodSignature + "";
+        
+        
+        for (String string : pMethods) {
+            if (methodSignature.equals(string))
+                return true;
+        }
+                
+        return false;
+    }
+    
+    public static ReflectionMethod parse(Method method)
+    {
+        ReflectionMethod returnValue;
+                        
+        returnValue = new ReflectionMethod();
+                
+        // Captura do nome do método
+        returnValue.setName(method.getName());
+        // O método getGenericReturnType() retorna o tipo 
+        // genérico, enquanto que o método getReturnType
+        // retorna um Class<?>        
+        returnValue.setReturnType(method.getGenericReturnType());
+        
+        // Capturar a assinatura do método
+        returnValue.setSignature(getMethodSignature(method));
+        
+        // Verifica se existe algum tipo proibido de método        
+        if (isProhibitedMethods(returnValue.getSignature()))
+            return null;
+        
+        // Verifica se o método é privado ou não
+        if (isPrivate(method))
+            return null;
+        
+        // Verifica se o método é estático ou não
+        if (isStatic(method))
+            returnValue.setStatic(true);
+        
+        // Executar a leitura de todos os parâmetros do método
+        for (Type item : method.getGenericParameterTypes())
+        {
+            // Converter o parâmetro do reflection para a entidade do modelo
+            ReflectionParameter parameter = ParameterParser.parse(item);
+            // Adicionar o parâmetro ao método de nosso modelo de dados
+            returnValue.addParameter(parameter);
+        }
+        
+        return returnValue;
+    }
+           
+    private static boolean isPrivate(Method method)
+    {        
+        String signature = method.toString();
+        
+        if (signature.contains("private "))
+            return true;
+        
+        return false;
+    }
+    
+    private static boolean isStatic(Method method)
+    {        
+        String signature = method.toString();
+        
+        if (signature.contains(" static "))
+            return true;
+        
+        return false;
+    }
+    
+    private static String getMethodSignature(Method method)
+    {
+        /*
+         // Codigo melhorado na classe Features...
+         
+        String methodSignature = method.toString();
+                        
+        if (methodSignature.contains("."))
+            methodSignature = methodSignature.substring(methodSignature.lastIndexOf(".") + 1);
+        
+        return methodSignature;*/
+        
+        String methodSignature = Features.getMethodSignature(method.toString());
+        
+        return methodSignature;
+    }
+}

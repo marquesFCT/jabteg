@@ -1,0 +1,13 @@
+
+package br.usp.each.saeg.agdtpoo.entity;
+
+import br.usp.each.saeg.agdtpoo.fitnessCompute.IFitness;
+import br.usp.each.saeg.agdtpoo.generationAlgorithms.selection.ISelection;
+
+public interface IGUIGenerationStrategy {
+    IFitness[] getSupportedFitnesses();
+    
+    ISelection[] getSupportedSelections();
+    
+    EnumCriterion[] getSupportedCriterions();
+}

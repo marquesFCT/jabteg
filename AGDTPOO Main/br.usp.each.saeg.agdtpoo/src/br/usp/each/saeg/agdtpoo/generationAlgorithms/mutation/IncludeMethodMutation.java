@@ -1,0 +1,128 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms.mutation;
+
+import br.usp.each.saeg.agdtpoo.entity.BytecodeType;
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import br.usp.each.saeg.agdtpoo.entity.InputPrimitiveDomain;
+import br.usp.each.saeg.agdtpoo.entity.ReflectionMethod;
+import br.usp.each.saeg.agdtpoo.entity.TestIndividual;
+import br.usp.each.saeg.agdtpoo.randomFeature.ObjectRandomFactory;
+import br.usp.each.saeg.agdtpoo.randomFeature.RandomValueFactory;
+import java.util.ArrayList;
+import java.util.Random;
+
+public class IncludeMethodMutation implements IMutation {
+    
+    private InputPrimitiveDomain _inputDomain;
+    private boolean _executedWithSuccess;
+        
+    
+    @Override
+    public boolean isExecutedWithSuccess() {
+        return this._executedWithSuccess;
+    }
+
+    @Override
+    public Individual mutate(Individual target) {
+        
+        Individual returnValue = new Individual();
+        TestIndividual testI = null;
+        
+        // Captura a estrutura do individuo sob teste
+        testI = target.getTestIndividual();
+        
+        // Inclui um novo metodo na estrutura do individuo
+        testI = mutate(testI);
+        
+        // Reatribui a estrutura do individuo para um novo individuo
+        returnValue.setIndividual(testI);
+        
+        return returnValue;
+    }
+
+    public TestIndividual mutate(TestIndividual target) {
+        
+        this._executedWithSuccess = false;
+        
+        ObjectRandomFactory objectFactory = null;
+        BytecodeType currentType = null;
+        TestIndividual anotherObjectToCopyMethod = null;
+        ReflectionMethod selectedMethod = null;
+        ReflectionMethod[] newMethodsToCopy = null;
+        ReflectionMethod[] currentMethods = null;
+        ArrayList<ReflectionMethod> newListOfMethods = null;
+        
+        // Captura o typo de dados sob teste
+        currentType = target.getBytecodeType();
+        
+        // Cria instancia do construtor de objetos aleatorios
+        objectFactory = new ObjectRandomFactory(this._inputDomain);
+        
+        // Gera um objeto para a copia do metodo
+        anotherObjectToCopyMethod = objectFactory.generateRandomTestIndividual(currentType);
+        
+        // Popula o objeto com valores
+        RandomValueFactory.setPrimitiveTips(this._inputDomain);
+        RandomValueFactory.setRandomValue(anotherObjectToCopyMethod);
+        
+        // Captura os metodos intermediarios gerados
+        newMethodsToCopy = anotherObjectToCopyMethod.getMethods();
+        
+        // Se os metodos intermediarios forem iguais a NULL então não tem pq continuar
+        if (newMethodsToCopy == null || newMethodsToCopy.length == 0)
+        {
+            this._executedWithSuccess = false;
+            return target;
+        }
+        
+        // Seleciona um metodo aleatoriamente para ser incluido no individuo atual
+        Random rnd = new Random();
+        int countOfMethods = newMethodsToCopy.length;    
+        int position = rnd.nextInt(countOfMethods);
+        if (position < 0)
+            position = 0;
+        selectedMethod = newMethodsToCopy[position];
+        
+        // Captura dos metodos atuais do individuo
+        currentMethods = target.getMethods();
+        
+        // Inicializar nova lista de metodos
+        newListOfMethods = new ArrayList<ReflectionMethod>();
+        
+        // Inicializando a nova lista de metodos
+        if (currentMethods != null && currentMethods.length > 0)
+        {
+            for (ReflectionMethod reflectionMethod : currentMethods) {
+                newListOfMethods.add(reflectionMethod);
+            }
+        }
+        
+        // Inseri o metodo gerado em uma posicao aleatoria
+        rnd = new Random();
+        countOfMethods = newListOfMethods.size();   
+        if (countOfMethods > 0) 
+        {
+            position = rnd.nextInt(countOfMethods);
+            if (position < 0)
+                position = 0;
+        }
+        else
+        {
+            position = 0;
+        }                
+        newListOfMethods.add(position, selectedMethod);
+        
+        // Reatribui os metodos ao individuo
+        target.setMethods(newListOfMethods.toArray(new ReflectionMethod[newListOfMethods.size()]));
+        
+        // Marcar a execussão como bem sucedida
+        this._executedWithSuccess = true;
+        
+        return target;
+    }
+        
+    @Override
+    public void setInputDomain(InputPrimitiveDomain inputDomain) {
+        this._inputDomain = inputDomain;
+    }    
+}

@@ -1,0 +1,10 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms;
+
+import br.usp.each.saeg.agdtpoo.randomFeature.PrimitiveRandomTips;
+
+public interface IStrategyPrimitiveTips {
+
+    void setPrimitiveTips(PrimitiveRandomTips tips);
+    
+}

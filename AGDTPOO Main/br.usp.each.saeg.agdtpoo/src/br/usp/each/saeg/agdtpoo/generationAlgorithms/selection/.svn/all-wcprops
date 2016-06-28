@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/testdatagen/!svn/ver/122/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/selection
+END
+AverageSelection.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/testdatagen/!svn/ver/123/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/selection/AverageSelection.java
+END
+TournamentSelection.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/testdatagen/!svn/ver/122/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/selection/TournamentSelection.java
+END
+RouletteSelection.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/testdatagen/!svn/ver/122/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/selection/RouletteSelection.java
+END
+ElitismSelection.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/testdatagen/!svn/ver/122/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/selection/ElitismSelection.java
+END
+ISelection.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/testdatagen/!svn/ver/122/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/selection/ISelection.java
+END

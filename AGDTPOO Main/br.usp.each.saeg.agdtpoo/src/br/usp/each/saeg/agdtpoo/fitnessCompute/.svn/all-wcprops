@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/testdatagen/!svn/ver/107/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/fitnessCompute
+END
+IneditismFitness.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/testdatagen/!svn/ver/123/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/fitnessCompute/IneditismFitness.java
+END
+SimilarityFitness.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/testdatagen/!svn/ver/123/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/fitnessCompute/SimilarityFitness.java
+END
+IFitness.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/testdatagen/!svn/ver/123/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/fitnessCompute/IFitness.java
+END
+FitnessException.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/testdatagen/!svn/ver/119/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/fitnessCompute/FitnessException.java
+END

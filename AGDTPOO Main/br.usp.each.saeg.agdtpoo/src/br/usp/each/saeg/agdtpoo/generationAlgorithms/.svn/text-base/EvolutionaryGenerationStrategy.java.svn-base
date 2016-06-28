@@ -1,0 +1,110 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms;
+
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import br.usp.each.saeg.agdtpoo.entity.TestDataGenerationToolException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EvolutionaryGenerationStrategy extends MetaheuristicBaseGenerationStrategy
+{    
+    // Iniciar a geração automática de dados de teste
+    @Override
+    public Individual[] execute() throws TestStrategyException
+    {         
+        // Zera o contador de iterações
+        this.InteractionCount = 0;
+        
+        List<Individual> solution = new ArrayList<Individual>();
+        
+        // Processo de inicialização 
+        initializeGeneration();
+
+        try                
+        {
+            // Geração da população inicial de indivíduos
+            this.CurrentPopulation = generateInitialPopulation();
+
+            // Executa os indivíduos 
+            executeIndividuals();
+
+            // Identificação dos ramos/nós que devem ser cobertos
+            this.Targets = identifyTargets();
+
+            // Atualizar os indivíduos
+            updateIndividuals();
+
+            for (int i = 0; i < this.Targets.length; i++)
+            {   
+                int attemptNumber = 0;
+                this.CurrentTarget = this.Targets[i];
+
+                do
+                {
+                    // Itera o contador de iterações
+                    this.InteractionCount++;
+                    
+                    attemptNumber++;
+                    
+                    if (verifyIfRequirementHasBeenCovered(this.CurrentTarget))                
+                    {
+                        this.CurrentTarget.isCovered(true);
+
+                        // Adiciona o indivíduo que cobriu o requisito como solução
+                        solution.add(this.currentSolutionToRequirement);                        
+                    }
+                    else
+                    {
+                        this.CurrentTarget.isCovered(false);
+                        
+                        // Calcula a fitness dos indivíduos
+                        computeFitness(this.CurrentPopulation, CurrentTarget);
+                                                                       
+                        // Executa mutação sobre a população atual de indivíduos
+                        this.CurrentPopulation = executeMutation(this.CurrentPopulation);
+
+                        // Verificar porque a população atinge o tamanho ZERO
+                        if (this.CurrentPopulation.length == 0)
+                            this.CurrentPopulation = generateInitialPopulation();
+                        
+                        // Executar indivíduos
+                        executeIndividuals();
+                                                                        
+                        // Atualizar os indivíduos
+                        updateIndividuals();
+                    }
+                }
+                while(!this.CurrentTarget.isCovered() && attemptNumber < this._maxNumberOfAttempts);
+            }
+        }                                
+        catch(TestDataGenerationToolException e)
+        {
+            throw new TestStrategyException(e);
+        }
+        catch(Exception e)
+        {
+            throw new TestStrategyException(e);
+        }
+
+        // Processo de finalização 
+        finalizeGeneration();
+
+        return solution.toArray(new Individual[solution.size()]);
+    }    
+
+    @Override
+    protected void finalizeGeneration() {
+        // Ainda não implementado
+    }
+
+    @Override
+    protected void initializeGeneration() {
+        // Ainda não implementado
+    }
+    
+    @Override
+    public String getGenerationStrategyName()
+    {
+        return "Evolutionary strategy";
+    }
+}

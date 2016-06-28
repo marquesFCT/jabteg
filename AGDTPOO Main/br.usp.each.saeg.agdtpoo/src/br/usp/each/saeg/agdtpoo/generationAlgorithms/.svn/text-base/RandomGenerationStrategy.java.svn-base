@@ -1,0 +1,126 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms;
+
+import br.usp.each.saeg.agdtpoo.TestDataFacade;
+import br.usp.each.saeg.agdtpoo.bytecodeFoundation.BytecodeReader;
+import br.usp.each.saeg.agdtpoo.entity.GenerationCoverage;
+import br.usp.each.saeg.agdtpoo.entity.GenerationRequirement;
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import br.usp.each.saeg.agdtpoo.entity.ReflectionClass;
+import br.usp.each.saeg.agdtpoo.entity.TestDataGenerationToolException;
+import br.usp.each.saeg.agdtpoo.randomFeature.PrimitiveRandomTips;
+import br.usp.each.saeg.agdtpoo.randomFeature.RandomValueFactory;
+
+public class RandomGenerationStrategy extends BaseGenerationStrategy implements IStrategyPrimitiveTips {
+   
+    private PrimitiveRandomTips _primitiveTips;
+    
+    @Override
+    public void setPrimitiveTips(PrimitiveRandomTips tips) {
+        
+        // Atribui os dados primitivos que guiarão a geração dos dados de teste
+        this._primitiveTips = tips;
+    
+    }
+
+    @Override
+    protected void executeIndividuals() throws TestDataGenerationToolException {
+
+        TestDataFacade.createUnitTestFile(junitFileJavaPath, this.CurrentPopulation);                            
+        
+        // Compila os indivíduos
+        this._testGenerationTool.compileIndividuals();
+        
+        this.ExecutionCount++;
+    }
+    
+    @Override
+    protected void updateIndividuals() throws TestDataGenerationToolException
+    {
+        if (this._testGenerationTool != null)
+        {           
+            GenerationCoverage[] coverages = this._testGenerationTool.getCoverages(this._criterion);
+
+            int index = 0;
+            for (Individual individual : this.CurrentPopulation) {            
+                
+                individual.setCoverage(coverages[index]);
+                index++;
+                
+            }
+        }
+    }
+
+    @Override
+    protected void finalizeGeneration() {
+        // Por enquanto não é utilizado
+    }
+
+    @Override
+    protected Individual[] generateInitialPopulation()
+    {
+        // Lê os dados do bytecode
+        BytecodeReader reader = new BytecodeReader(this.JarPath, this.ClassUnderTest);
+        
+        ReflectionClass rc = reader.getReflectionClass();
+        
+        // Gera indivíduos aleatórios
+        Individual[] individuals = RandomValueFactory.getNewPopulation(this.PopulationSize, rc, this.MethodUnderTest, this._primitiveTips);
+      
+        return individuals;        
+    }
+
+    @Override
+    protected GenerationRequirement[] identifyTargets() throws TestDataGenerationToolException {
+
+        GenerationRequirement[] returnValue = this._testGenerationTool.getRequirements(this._criterion);
+        
+        return returnValue;
+    }
+
+    @Override
+    protected void initializeGeneration() {
+        // Método implementado apenas para adequação a interface
+        // Talvez seja interessante remover este método da classe base
+    }
+
+    @Override
+    protected boolean verifyIfRequirementHasBeenCovered(GenerationRequirement requirement) {
+        
+        boolean returnValue = false;
+        
+        // Varre a população atual identificando se o requisito foi coberto
+        for (Individual individual : this.CurrentPopulation) {
+            
+            // Captura a cobertura de um indivíduo e verifica se o requisito foi coberto
+            if (verifyIndividualRequirementCovered(requirement, individual.getCoverage()))
+            {
+                returnValue = true;                
+                break;
+            }            
+        }       
+        
+        return returnValue;
+        
+    }
+    
+    // Verifica se um indivíduo cobre um requisito
+    private boolean verifyIndividualRequirementCovered(GenerationRequirement requirement, GenerationCoverage coverage)
+    {
+        boolean covered = false;
+        
+        if (coverage != null)
+        {
+            if (coverage.getExecutionPath().contains("-" + requirement.getIdRequirement() + "-"))
+                covered = true;
+        }
+        
+        return covered;
+    }
+    
+    @Override
+    public String getGenerationStrategyName()
+    {
+        return "Random strategy";
+    }
+}

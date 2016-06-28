@@ -1,0 +1,52 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms.selection;
+
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import java.util.Random;
+
+public class TournamentSelection  implements ISelection {
+
+    @Override
+    public Individual[] selectIndividualsToMutation(Individual[] population) {
+        
+        // Seleção por torneio, estre critério de seleção faz comparações entre 
+        // os indivíduos, a fim de selecionar os melhores da população.
+       
+        int quantityOfSelecteds = population.length / 2;        
+        Individual[] newPopulation = new Individual[quantityOfSelecteds];
+                   
+        for (int i = 0; i < quantityOfSelecteds; i++) {
+                   
+            Random rand = new Random();
+            
+            int tournament01 = 0;
+            int tournament02 = 0;
+            
+            do
+            {   
+                tournament01 = rand.nextInt(population.length - 1);
+                tournament02 = rand.nextInt(population.length - 1);
+                
+            }while((tournament01 == tournament02) || (tournament01 < 0) || (tournament02 < 0));
+            
+            Individual individual01 = population[tournament01];
+            Individual individual02 = population[tournament02];
+            
+            if (individual02.getFitness() > individual01.getFitness())
+                newPopulation[i] = individual02;
+            else
+                newPopulation[i] = individual01;
+            
+        }
+        
+        return newPopulation;
+        
+    }
+    
+    @Override
+    public String getSelectionName()
+    {
+        return "Tournament Selection";
+    }
+    
+}

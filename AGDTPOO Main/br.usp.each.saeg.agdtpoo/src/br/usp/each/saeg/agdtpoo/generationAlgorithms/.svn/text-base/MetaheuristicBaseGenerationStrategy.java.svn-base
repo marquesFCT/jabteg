@@ -1,0 +1,232 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms;
+
+import br.usp.each.saeg.agdtpoo.TestDataFacade;
+import br.usp.each.saeg.agdtpoo.bytecodeFoundation.BytecodeReader;
+import br.usp.each.saeg.agdtpoo.entity.EnumCriterion;
+import br.usp.each.saeg.agdtpoo.entity.GenerationCoverage;
+import br.usp.each.saeg.agdtpoo.entity.GenerationRequirement;
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import br.usp.each.saeg.agdtpoo.entity.ReflectionClass;
+import br.usp.each.saeg.agdtpoo.entity.TestDataGenerationToolException;
+import br.usp.each.saeg.agdtpoo.fitnessCompute.FitnessException;
+import br.usp.each.saeg.agdtpoo.fitnessCompute.IFitness;
+import br.usp.each.saeg.agdtpoo.generationAlgorithms.mutation.MutationException;
+import br.usp.each.saeg.agdtpoo.generationAlgorithms.mutation.MutationMachine;
+import br.usp.each.saeg.agdtpoo.generationAlgorithms.selection.ISelection;
+import br.usp.each.saeg.agdtpoo.randomFeature.PrimitiveRandomTips;
+import br.usp.each.saeg.agdtpoo.randomFeature.RandomValueFactory;
+
+
+public abstract class MetaheuristicBaseGenerationStrategy extends BaseGenerationStrategy implements IStrategyPrimitiveTips, IStrategyFitness, IStrategySelection {
+    
+    protected PrimitiveRandomTips _primitiveTips;
+    protected IFitness _fitness;
+    protected ISelection _selection;  
+    protected Individual currentSolutionToRequirement; 
+    protected int _maxNumberOfAttempts = 2;
+    
+    // Iniciar a geração automática de dados de teste
+    @Override
+    public abstract Individual[] execute() throws TestStrategyException;
+            
+    public void setNumberMaxOfAttemps(int numberMaxOfAttempts)
+    {
+        this._maxNumberOfAttempts = numberMaxOfAttempts;
+    }
+            
+    @Override
+    public void setPrimitiveTips(PrimitiveRandomTips tips) {
+        
+        // Atribui os dados primitivos que guiarão a geração dos dados de teste
+        this._primitiveTips = tips;
+    
+    }
+
+    @Override
+    protected void executeIndividuals() throws TestDataGenerationToolException {
+        
+        executeIndividuals(this.CurrentPopulation);
+        
+    }
+    
+    protected void executeIndividuals(Individual[] population) throws TestDataGenerationToolException {
+        
+        // Criar arquivo JUnit
+        TestDataFacade.createUnitTestFile(junitFileJavaPath, population);    
+        
+        // Compila os indivíduos
+        this._testGenerationTool.compileIndividuals();
+        
+        this.ExecutionCount++;
+    }    
+
+    @Override
+    protected abstract void finalizeGeneration();
+
+    @Override
+    protected Individual[] generateInitialPopulation() throws TestDataGenerationToolException {
+        
+        // Lê os dados do bytecode
+        BytecodeReader reader = new BytecodeReader(this.JarPath, this.ClassUnderTest);
+        
+        ReflectionClass rc = reader.getReflectionClass();
+        
+        // Gera indivíduos aleatórios
+        Individual[] individuals = RandomValueFactory.getNewPopulation(this.PopulationSize, rc, this.MethodUnderTest, this._primitiveTips);
+      
+        return individuals;          
+    }
+
+    @Override
+    protected GenerationRequirement[] identifyTargets() throws TestDataGenerationToolException {
+
+        GenerationRequirement[] returnValue = this._testGenerationTool.getRequirements(this._criterion);
+        
+        return returnValue;
+    }
+
+    @Override
+    protected abstract void initializeGeneration();
+
+    @Override
+    protected void updateIndividuals() throws TestDataGenerationToolException {
+        
+        this.CurrentPopulation = updateIndividuals(this.CurrentPopulation);
+    }
+    
+    protected Individual[] updateIndividuals(Individual[] population) throws TestDataGenerationToolException {
+        
+        if (this._testGenerationTool != null)
+        {           
+            GenerationCoverage[] coverages = this._testGenerationTool.getCoverages(this._criterion);
+
+            int index = 0;
+            for (Individual individual : population) {            
+                
+                individual.setCoverage(coverages[index]);
+                index++;                
+            }
+        }
+        
+        return population;
+    }    
+
+    @Override
+    protected boolean verifyIfRequirementHasBeenCovered(GenerationRequirement requirement) {
+        
+        currentSolutionToRequirement = null;
+                
+        boolean returnValue = false;
+        
+        // Varre a população atual identificando se o requisito foi coberto
+        for (Individual individual : this.CurrentPopulation) {
+            
+            // Captura a cobertura de um indivíduo e verifica se o requisito foi coberto
+            if (verifyIndividualRequirementCovered(requirement, individual.getCoverage()))
+            {
+                returnValue = true;   
+                currentSolutionToRequirement = individual;
+                break;
+            }            
+        }       
+        
+        return returnValue;
+        
+    }
+    
+    // Verifica se um indivíduo cobre um requisito
+    protected boolean verifyIndividualRequirementCovered(GenerationRequirement requirement, GenerationCoverage coverage)
+    {
+        boolean covered = false;
+        
+        if (coverage != null)
+        {
+            if (coverage.getExecutionPath().contains("-" + requirement.getIdRequirement() + "-"))
+                covered = true;
+        }
+        
+        return covered;
+    }
+
+    @Override
+    public void setFitness(IFitness fitness) {
+        
+        this._fitness = fitness;
+    }
+    
+    @Override
+    public IFitness getFitness() {
+        
+        return this._fitness;
+    }
+
+    @Override
+    public void setSelectionMode(ISelection selection) {
+                
+        this._selection = selection;
+    }
+    
+    @Override
+    public ISelection getSelectionMode() {
+                
+        return this._selection;
+    }
+        
+    protected Individual[] executeMutation(Individual[] population) throws MutationException
+    {    
+        // Filtra a população
+        if (this._selection != null)
+            population = this._selection.selectIndividualsToMutation(population);
+        
+        if (population.length == 0)
+            return population;
+        
+        // Cria maquina de mutacao        
+        MutationMachine mm = new MutationMachine(population);
+        
+        // Atribui dados de geracao aleatoria dirigida
+        mm.setPrimitiveRandomTips(this._primitiveTips);
+       
+        // Executa mutacao dos individuos
+        Individual[] returnValue = mm.mutate();
+                
+        // Retorna a nova populacao
+        return returnValue;
+    }
+    
+    protected void computeFitness(Individual[] individuals, GenerationRequirement requirement) throws FitnessException
+    {
+        for (Individual individual : individuals) {
+            
+            double fitness = 0;
+            
+            fitness = computeFitness(individual, requirement);
+            
+            individual.setFitnesss(fitness);
+        }
+    }
+               
+    protected double computeFitness(Individual individual, GenerationRequirement target) throws FitnessException
+    {
+        double fitness = 0;
+        GenerationCoverage currentCoverage = null;
+        
+        currentCoverage = individual.getCoverage();
+        
+        // Atribuir os requisitos a fitness
+        this._fitness.setRequirements(this.Targets);
+        
+        // Atribuir a população atual a fitness
+        this._fitness.setCurrentPopulation(this.CurrentPopulation);
+    
+        // Calcula a fitness do individuo
+        fitness = this._fitness.computeFitness(target, currentCoverage);
+                
+        return fitness;
+    }
+    
+    @Override
+    public abstract String getGenerationStrategyName();
+    
+}

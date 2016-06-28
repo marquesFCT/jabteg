@@ -1,0 +1,86 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms.mutation;
+
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import br.usp.each.saeg.agdtpoo.entity.ReflectionMethod;
+import br.usp.each.saeg.agdtpoo.entity.TestIndividual;
+import br.usp.each.saeg.agdtpoo.randomFeature.PrimitiveRandomTips;
+import java.util.ArrayList;
+import java.util.Random;
+
+public class RemoveMethodMutation implements IMutation {
+    
+    private boolean _executedWithSuccess;
+    private PrimitiveRandomTips _currentTips;
+    
+    @Override
+    public Individual mutate(Individual target)
+    {
+        _executedWithSuccess = false;
+        
+        Individual returnValue = new Individual();
+        TestIndividual testI = null;
+        
+        // Captura a estrutura do individuo sob teste
+        testI = target.getTestIndividual();
+        
+        // Remove um de seus metodos
+        testI = mutate(testI);
+        
+        // Reatribui a estrutura do individuo para um novo individuo
+        returnValue.setIndividual(testI);
+        
+        return returnValue;
+    }
+    
+    @Override
+    public void setPrimitiveRandomTips(PrimitiveRandomTips tips)
+    {
+        this._currentTips = tips;
+    }
+    
+    private TestIndividual mutate(TestIndividual target)
+    {       
+        int countOfIntermediateMethods = 0;
+        
+        countOfIntermediateMethods = target.getMethods().length;
+              
+        // Remove o metodo conforme
+        if (countOfIntermediateMethods == 1)
+        {
+            target.setMethods(new ReflectionMethod[0]);
+            this._executedWithSuccess = true;
+        }
+        else if (countOfIntermediateMethods > 0)
+        {
+            Random rand = new Random();     
+            // Seleciona um metodo aleatoriamente
+            int selectedMethod = rand.nextInt(countOfIntermediateMethods);
+            
+            ArrayList<ReflectionMethod> newMethods = new ArrayList<ReflectionMethod>();
+            // Cria novo array de metodos, sem o metodo selecionado
+            for (int i = 0; i < countOfIntermediateMethods; i++) {
+                
+                // Se o metodo selecionado for igual ao item do FOR,
+                // entao ele nao sera incluido na lista
+                if (selectedMethod == i)
+                    continue;
+                
+                // Captura o metodo
+                ReflectionMethod method = target.getMethods()[i];
+                newMethods.add(method);
+            }
+            
+            target.setMethods(newMethods.toArray(new ReflectionMethod[newMethods.size()]));
+            this._executedWithSuccess = true;
+        }            
+        
+        return target;
+    }
+    
+    @Override
+    public boolean isExecutedWithSuccess()
+    {
+        return this._executedWithSuccess;
+    }
+}

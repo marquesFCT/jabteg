@@ -1,0 +1,21 @@
+K 26
+svn:wc:ra_dav:activity-url
+V 26
+/svn/testdatagen/!svn/act/
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/testdatagen/!svn/ver/107/trunk/AGDTPOO/main/source
+END
+build.xml
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/testdatagen/!svn/ver/107/trunk/AGDTPOO/main/source/build.xml
+END
+manifest.mf
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/testdatagen/!svn/ver/107/trunk/AGDTPOO/main/source/manifest.mf
+END

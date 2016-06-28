@@ -1,0 +1,145 @@
+
+package br.usp.each.saeg.agdtpoo.generationAlgorithms;
+
+import br.usp.each.saeg.agdtpoo.entity.EnumCriterion;
+import br.usp.each.saeg.agdtpoo.entity.GenerationRequirement;
+import br.usp.each.saeg.agdtpoo.entity.ITestDataGenerationTool;
+import br.usp.each.saeg.agdtpoo.entity.Individual;
+import br.usp.each.saeg.agdtpoo.entity.TestDataGenerationToolException;
+
+// Classe base para estratégias de geração de dados de teste
+public abstract class BaseGenerationStrategy {
+    
+        protected String junitFileJavaPath = "c:\\temp\\AutomaticTest.java";
+    
+        protected EnumCriterion _criterion;
+        protected int ExecutionCount;
+        protected int InteractionCount;
+        protected int PopulationSize;
+        protected String JarPath;
+        protected String ClassUnderTest;
+        protected String MethodUnderTest;
+        protected Individual[] CurrentPopulation;
+        protected GenerationRequirement[] Targets;
+        protected GenerationRequirement CurrentTarget;
+        
+        protected ITestDataGenerationTool _testGenerationTool;
+        
+        public void initialize(String jarPath, int populationSize, String classUnderTest, String methodUnderTest)
+        {
+            this.JarPath = jarPath;
+            this.ClassUnderTest = classUnderTest;
+            this.MethodUnderTest = methodUnderTest;
+            this.PopulationSize = populationSize;
+        }
+    
+        public void setCriterion(EnumCriterion criterion)
+        {
+            this._criterion = criterion;
+        }
+        
+        public int getCountOfInteractions()
+        {
+            return this.InteractionCount;
+        }
+        
+        public int getCountOfExecutions()
+        {
+            return this.ExecutionCount;
+        }
+        
+        public GenerationRequirement[] getRequirements()
+        {
+            return this.Targets;
+        }
+        
+        public void setInitialPopulationSize(int populationSize)
+        {
+            this.PopulationSize = populationSize;
+        }
+        
+        public void setTestDataGenerationTool(ITestDataGenerationTool testGenerationTool)
+        {
+            this._testGenerationTool = testGenerationTool;
+        }
+        
+        // Passo 00 - Iniciar a geração automática de dados de teste
+        public Individual[] execute() throws TestStrategyException
+        {                           
+            // Zera a contagem de iterações
+            this.InteractionCount = 0;
+            
+            // Processo de inicialização 
+            initializeGeneration();
+              
+            try                
+            {
+                // Geração da população inicial de indivíduos
+                this.CurrentPopulation = generateInitialPopulation();
+            
+                // Executa os indivíduos 
+                executeIndividuals();
+            
+                // Identificação dos ramos/nós que devem ser cobertos
+                this.Targets = identifyTargets();
+                                            
+                // Atualizar os indivíduos
+                updateIndividuals();
+           
+                for (int i = 0; i < this.Targets.length; i++)
+                {   
+                    // Itera o contador de iterações
+                    this.InteractionCount++;
+                    
+                    this.CurrentTarget = this.Targets[i];
+
+                    if (verifyIfRequirementHasBeenCovered(this.CurrentTarget))
+                    {
+                        this.CurrentTarget.isCovered(true);
+                    }
+                    else
+                    {
+                        this.CurrentTarget.isCovered(false);
+                    }                    
+                }
+            }                                
+            catch(TestDataGenerationToolException e)
+            {
+                throw new TestStrategyException(e);
+            }
+            catch(Exception e)
+            {
+                throw new TestStrategyException(e);
+            }
+            
+            // Processo de finalização 
+            finalizeGeneration();
+        
+            // Retorna a população atual
+            return this.CurrentPopulation;
+        }
+    
+        // Inicilizar o processo de geração de dados de teste
+        protected abstract void initializeGeneration();
+
+        // Gerar população
+        protected abstract Individual[] generateInitialPopulation() throws TestDataGenerationToolException;
+
+        // Identificar os requisitos que devem ser cobertos
+        protected abstract GenerationRequirement[] identifyTargets() throws TestDataGenerationToolException;
+                
+        // Executar os indivíduos
+        protected abstract void executeIndividuals() throws TestDataGenerationToolException;
+
+        // Atualizar os indivíduos com os resultados obtidos após a execução dos mesmos
+        protected abstract void updateIndividuals()  throws TestDataGenerationToolException;
+        
+        // Verificar se o requisito foi coberto
+        protected abstract boolean verifyIfRequirementHasBeenCovered(GenerationRequirement requirement);
+        
+        // Finalizar a geração de dados de teste 
+        protected abstract void finalizeGeneration();
+        
+        // Nome da estratégia de geração de dados de teste 
+        public abstract String getGenerationStrategyName();
+}

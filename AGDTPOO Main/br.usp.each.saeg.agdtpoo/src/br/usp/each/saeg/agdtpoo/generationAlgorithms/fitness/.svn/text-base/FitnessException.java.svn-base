@@ -1,0 +1,12 @@
+
+package br.usp.each.saeg.agdtpoo.fitnessCompute;
+
+public class FitnessException extends Exception {
+
+    public FitnessException(String msg){
+        
+        super(msg);
+        
+    }
+}
+

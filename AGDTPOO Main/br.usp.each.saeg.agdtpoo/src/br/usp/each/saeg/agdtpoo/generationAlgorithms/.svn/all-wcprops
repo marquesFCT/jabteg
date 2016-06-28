@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/testdatagen/!svn/ver/107/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms
+END
+RandomGenerationStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/testdatagen/!svn/ver/129/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/RandomGenerationStrategy.java
+END
+EvolutionaryGenerationStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/testdatagen/!svn/ver/126/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/EvolutionaryGenerationStrategy.java
+END
+MetaheuristicBaseGenerationStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/testdatagen/!svn/ver/129/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/MetaheuristicBaseGenerationStrategy.java
+END
+TestStrategyException.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/testdatagen/!svn/ver/119/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/TestStrategyException.java
+END
+IStrategySelection.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/testdatagen/!svn/ver/127/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/IStrategySelection.java
+END
+SimulatedAnnealingGenerationStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/testdatagen/!svn/ver/128/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/SimulatedAnnealingGenerationStrategy.java
+END
+IStrategyPrimitiveTips.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/testdatagen/!svn/ver/115/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/IStrategyPrimitiveTips.java
+END
+IStrategyFitness.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/testdatagen/!svn/ver/127/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/IStrategyFitness.java
+END
+BaseGenerationStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/testdatagen/!svn/ver/129/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/BaseGenerationStrategy.java
+END
+IndividualsSelector.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/testdatagen/!svn/ver/120/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/IndividualsSelector.java
+END
+HillClimbingGenerationStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/testdatagen/!svn/ver/128/trunk/AGDTPOO/main/source/src/br/usp/each/saeg/agdtpoo/generationAlgorithms/HillClimbingGenerationStrategy.java
+END
